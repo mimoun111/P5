@@ -54,7 +54,10 @@ const apiFetch = () => {
 button.addEventListener("click", function () {
   let checkPanier = JSON.parse(localStorage.getItem("panier"));
   let productInCart = false;
-  if (!checkPanier) {
+
+  if (quantity.value == 0 || select.value == "") {
+    alert("veuillez selectionner une couleur et une quantité");
+  } else if (!checkPanier) {
     const produitTableau = [];
     const produit = {
       id: dataProduct._id,
@@ -75,6 +78,7 @@ button.addEventListener("click", function () {
         productInCart = true;
         element.quantity = parseInt(element.quantity);
         element.quantity += parseInt(quantity.value);
+        alert("vous avez ajouter un produits au panier");
       }
     }
     if (productInCart === false) {
@@ -89,6 +93,7 @@ button.addEventListener("click", function () {
         price: dataProduct.price,
       };
       checkPanier.push(produit);
+      alert("vous avez ajouter un produits au panier");
     }
     localStorage.setItem("panier", JSON.stringify(checkPanier));
   }

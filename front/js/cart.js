@@ -1,14 +1,16 @@
 const section = document.getElementById("cart__items");
-const totelQuantity = document.getElementById("totalQuantity");
+const totalQuantity = document.getElementById("totalQuantity");
 const totalPrice = document.getElementById("totalPrice");
 const errorMsg = document.getElementById("firstNameErrorMsg");
 
 let checkPanier = JSON.parse(localStorage.getItem("panier"));
 
 const afficherProduit = () => {
+  while (section.firstChild) {
+    section.removeChild(section.firstChild);
+  }
   if (checkPanier) {
-    for (let produit of checkPanier) {
-      console.log(produit);
+    for (let [index, produit] of checkPanier.entries()) {
       //recupération des element du DOM
       const newArticle = document.createElement("article");
       const divImg = document.createElement("div");
@@ -46,12 +48,25 @@ const afficherProduit = () => {
       newParaColor.innerText = produit.color;
       newParaPrice.innerText = produit.price + " euros";
 
-      input.setAttribute("type", " number");
+      input.setAttribute("type", "number");
       input.classList.add("itemQuantity");
       input.setAttribute("name", "itemQuantity");
       input.setAttribute("min", "1");
       input.setAttribute("max", "100");
       input.setAttribute("value", produit.quantity);
+      input.addEventListener("change", (event) => {
+        let targetValue = event.target.value;
+        if (targetValue > 0) {
+          produit.quantity = parseInt(targetValue);
+          console.log(checkPanier);
+          calculPrixTotal();
+          localStorage.setItem("panier", JSON.stringify(checkPanier));
+        } else {
+          checkPanier.splice(index, 1);
+          localStorage.setItem("panier", JSON.stringify(checkPanier));
+          afficherProduit();
+        }
+      });
 
       divContentSettingsDelete.classList.add(
         "cart__item__content__settings__delete"
@@ -78,4 +93,17 @@ const afficherProduit = () => {
   }
 };
 
+const calculPrixTotal = () => {
+  let prixTotal = 0;
+  let totalProduit = 0;
+
+  for (produit of checkPanier) {
+    totalProduit += produit.quantity;
+    prixTotal += produit.price * produit.quantity;
+  }
+  totalQuantity.innerText = totalProduit;
+  totalPrice.innerText = prixTotal;
+};
+
 afficherProduit();
+calculPrixTotal();
