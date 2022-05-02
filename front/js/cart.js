@@ -2,14 +2,31 @@ const section = document.getElementById("cart__items");
 const totalQuantity = document.getElementById("totalQuantity");
 const totalPrice = document.getElementById("totalPrice");
 const errorMsg = document.getElementById("firstNameErrorMsg");
-
+//stockage des  données dans localstorage nommé panier
 let checkPanier = JSON.parse(localStorage.getItem("panier"));
 
+// calcul du prix total et de la quantité total
+const calculPrixTotal = () => {
+  let prixTotal = 0;
+  let totalProduit = 0;
+
+  for (produit of checkPanier) {
+    totalProduit += produit.quantity;
+    prixTotal += produit.price * produit.quantity;
+  }
+  totalQuantity.innerText = totalProduit;
+  totalPrice.innerText = prixTotal;
+};
+
+// ajout des element global du panier
 const afficherProduit = () => {
+  //tant qu'il y a un enfant dans l'objet section, on le supprime
   while (section.firstChild) {
     section.removeChild(section.firstChild);
   }
+  //si panier existant dans localstorage
   if (checkPanier) {
+    //recuperation de l'index et de la valeur du tableau
     for (let [index, produit] of checkPanier.entries()) {
       //recupération des element du DOM
       const newArticle = document.createElement("article");
@@ -43,22 +60,23 @@ const afficherProduit = () => {
       divContentSettingsQuantity.classList.add(
         "cart__item__content__settings__quantity"
       );
-
+      // affichage des textes
       newH2.innerText = produit.name;
       newParaColor.innerText = produit.color;
       newParaPrice.innerText = produit.price + " euros";
-
+      // création du bouton ajout de la quantité
       input.setAttribute("type", "number");
       input.classList.add("itemQuantity");
       input.setAttribute("name", "itemQuantity");
       input.setAttribute("min", "1");
       input.setAttribute("max", "100");
       input.setAttribute("value", produit.quantity);
+      // création de la réaction au changement de la valeur
       input.addEventListener("change", (event) => {
         let targetValue = event.target.value;
+
         if (targetValue > 0) {
           produit.quantity = parseInt(targetValue);
-          console.log(checkPanier);
           calculPrixTotal();
           localStorage.setItem("panier", JSON.stringify(checkPanier));
         } else {
@@ -71,8 +89,16 @@ const afficherProduit = () => {
       divContentSettingsDelete.classList.add(
         "cart__item__content__settings__delete"
       );
-
+      //affichage du bouton supprimer
       newParaDelete.classList.add("deleteItem");
+      newParaDelete.innerText = "supprimer";
+      //ajout d'une fontion qui supprime l'elemment du panier et du localstorage
+      newParaDelete.addEventListener("click", () => {
+        checkPanier.splice(index, 1);
+        localStorage.setItem("panier", JSON.stringify(checkPanier));
+        afficherProduit();
+        calculPrixTotal();
+      });
 
       //assignation des enfants aux elements
       section.appendChild(newArticle);
@@ -93,17 +119,6 @@ const afficherProduit = () => {
   }
 };
 
-const calculPrixTotal = () => {
-  let prixTotal = 0;
-  let totalProduit = 0;
-
-  for (produit of checkPanier) {
-    totalProduit += produit.quantity;
-    prixTotal += produit.price * produit.quantity;
-  }
-  totalQuantity.innerText = totalProduit;
-  totalPrice.innerText = prixTotal;
-};
-
+// exectution des fonction
 afficherProduit();
 calculPrixTotal();
