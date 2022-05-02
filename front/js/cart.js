@@ -4,22 +4,50 @@ const totalPrice = document.getElementById("totalPrice");
 const errorMsg = document.getElementById("firstNameErrorMsg");
 //stockage des  données dans localstorage nommé panier
 let checkPanier = JSON.parse(localStorage.getItem("panier"));
+let apiTableau = [];
 
+// recuperation dynamiquement des les valeur d'api
+const recuperationValeurProduit = (id) => {
+  return apiTableau.find((element) => element._id === id);
+};
 // calcul du prix total et de la quantité total
 const calculPrixTotal = () => {
   let prixTotal = 0;
   let totalProduit = 0;
 
   for (produit of checkPanier) {
+    console.log(produit.id);
     totalProduit += produit.quantity;
-    prixTotal += produit.price * produit.quantity;
+    prixTotal += recuperationValeurProduit(produit.id).price * produit.quantity;
   }
   totalQuantity.innerText = totalProduit;
   totalPrice.innerText = prixTotal;
 };
 
+const apiFetch = () => {
+  //lien pour requete à l'API
+  fetch("http://localhost:3000/api/products/")
+    //convertisseur de json en javascript
+    .then(function (response) {
+      if (response.ok) {
+        return response.json();
+      }
+    })
+    //recuperation des donné
+    .then(function (data) {
+      apiTableau = data;
+      afficherProduit(data);
+      calculPrixTotal();
+      console.log(data);
+    })
+    //en cas error afficher une alerte
+    .catch(function (err) {
+      alert("Une erreur est survenue");
+    });
+};
+
 // ajout des element global du panier
-const afficherProduit = () => {
+const afficherProduit = (data) => {
   //tant qu'il y a un enfant dans l'objet section, on le supprime
   while (section.firstChild) {
     section.removeChild(section.firstChild);
@@ -51,8 +79,11 @@ const afficherProduit = () => {
 
       divImg.classList.add("cart__item__img");
 
-      newImg.setAttribute("src", produit.image);
-      newImg.setAttribute("alt", produit.altTxt);
+      newImg.setAttribute(
+        "src",
+        recuperationValeurProduit(produit.id).imageUrl
+      );
+      newImg.setAttribute("alt", recuperationValeurProduit(produit.id).altTxt);
 
       divContent.classList.add("cart__item__content");
       divContentDescription.classList.add("cart__item__content__description");
@@ -61,9 +92,10 @@ const afficherProduit = () => {
         "cart__item__content__settings__quantity"
       );
       // affichage des textes
-      newH2.innerText = produit.name;
+      newH2.innerText = recuperationValeurProduit(produit.id).name;
       newParaColor.innerText = produit.color;
-      newParaPrice.innerText = produit.price + " euros";
+      newParaPrice.innerText =
+        recuperationValeurProduit(produit.id).price + " euros";
       // création du bouton ajout de la quantité
       input.setAttribute("type", "number");
       input.classList.add("itemQuantity");
@@ -120,5 +152,4 @@ const afficherProduit = () => {
 };
 
 // exectution des fonction
-afficherProduit();
-calculPrixTotal();
+apiFetch();

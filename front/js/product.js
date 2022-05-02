@@ -63,11 +63,6 @@ button.addEventListener("click", function () {
       id: dataProduct._id,
       color: select.value,
       quantity: parseInt(quantity.value),
-      name: dataProduct.name,
-      description: dataProduct.description,
-      image: dataProduct.imageUrl,
-      altTxt: dataProduct.altTxt,
-      price: dataProduct.price,
     };
     produitTableau.push(produit);
     alert("vous avez ajouter un produits au panier");
@@ -86,11 +81,6 @@ button.addEventListener("click", function () {
         id: dataProduct._id,
         color: select.value,
         quantity: parseInt(quantity.value),
-        name: dataProduct.name,
-        description: dataProduct.description,
-        image: dataProduct.imageUrl,
-        altTxt: dataProduct.altTxt,
-        price: dataProduct.price,
       };
       checkPanier.push(produit);
       alert("vous avez ajouter un produits au panier");
