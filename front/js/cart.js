@@ -1,12 +1,31 @@
 const section = document.getElementById("cart__items");
 const totalQuantity = document.getElementById("totalQuantity");
 const totalPrice = document.getElementById("totalPrice");
-const errorMsg = document.getElementById("firstNameErrorMsg");
+
+const errorMsgFirstName = document.getElementById("firstNameErrorMsg");
+const errorMsgLastName = document.getElementById("lastNameErrorMsg");
+const errorMsgAdresse = document.getElementById("addressErrorMsg");
+const errorMsgCity = document.getElementById("cityErrorMsg");
+const errorMsgEmail = document.getElementById("emailErrorMsg");
+const order = document.getElementById("order");
+
+let inputFirstName = document.getElementById("firstName");
+let inputLastName = document.getElementById("lastName");
+let inputAdresse = document.getElementById("address");
+let inputCity = document.getElementById("city");
+let inputEmail = document.getElementById("email");
+
+let prenom = false;
+let nom = false;
+let adresse = true;
+let ville = false;
+let email = false;
+
 //stockage des  données dans localstorage nommé panier
 let checkPanier = JSON.parse(localStorage.getItem("panier"));
 let apiTableau = [];
 
-// recuperation dynamiquement des les valeur d'api
+// recuperation dynamique des valeur du produit de l'api
 const recuperationValeurProduit = (id) => {
   return apiTableau.find((element) => element._id === id);
 };
@@ -14,14 +33,20 @@ const recuperationValeurProduit = (id) => {
 const calculPrixTotal = () => {
   let prixTotal = 0;
   let totalProduit = 0;
-
-  for (produit of checkPanier) {
-    console.log(produit.id);
-    totalProduit += produit.quantity;
-    prixTotal += recuperationValeurProduit(produit.id).price * produit.quantity;
+  // si panier existe
+  if (checkPanier) {
+    // pour chaque produit du panier
+    for (produit of checkPanier) {
+      // ajoute la quantité de produit au total de produit
+      totalProduit += produit.quantity;
+      // multiplie le prix du produit  par la quantité
+      prixTotal +=
+        recuperationValeurProduit(produit.id).price * produit.quantity;
+    }
+    // achicher le resultat
+    totalQuantity.innerText = totalProduit;
+    totalPrice.innerText = prixTotal;
   }
-  totalQuantity.innerText = totalProduit;
-  totalPrice.innerText = prixTotal;
 };
 
 const apiFetch = () => {
@@ -36,18 +61,17 @@ const apiFetch = () => {
     //recuperation des donné
     .then(function (data) {
       apiTableau = data;
-      afficherProduit(data);
+      afficherProduit();
       calculPrixTotal();
-      console.log(data);
     })
     //en cas error afficher une alerte
     .catch(function (err) {
-      alert("Une erreur est survenue");
+      alert("Une erreur est survenue api");
     });
 };
 
 // ajout des element global du panier
-const afficherProduit = (data) => {
+const afficherProduit = () => {
   //tant qu'il y a un enfant dans l'objet section, on le supprime
   while (section.firstChild) {
     section.removeChild(section.firstChild);
@@ -150,6 +174,134 @@ const afficherProduit = (data) => {
     }
   }
 };
-
 // exectution des fonction
 apiFetch();
+// creation des fonction permettant de verifier les valeur saisie par l'utilisateur
+const verificationFirstName = () => {
+  // si la valeur saisie par l'utilisateur est valable par rapport a la fonction validateFirstName converti la variable en true
+  if (validateFirstName(inputFirstName.value) == true) {
+    errorMsgFirstName.innerText = "";
+    prenom = true;
+    // sinon converti la variable en false et affiche error msg
+  } else {
+    prenom = false;
+    errorMsgFirstName.innerText = "il y a une erreur dans la saisie du prénom";
+  }
+};
+const verificationLastName = () => {
+  if (validateFirstName(inputLastName.value) == true) {
+    errorMsgLastName.innerText = "";
+    nom = true;
+  } else {
+    nom = false;
+    errorMsgLastName.innerText = "il y a une erreur dans la saisie du nom";
+  }
+};
+const verificationAdress = () => {
+  if (adresse == true) {
+    errorMsgAdresse.innerText = "";
+    adresse = true;
+  } else {
+    adresse = false;
+    errorMsgAdresse.innerText = "il y a une erreur dans la saisie l'adress";
+  }
+};
+const verificationCity = () => {
+  if (validateCity(inputCity.value) == true) {
+    errorMsgCity.innerText = "";
+    ville = true;
+  } else {
+    ville = false;
+    errorMsgCity.innerText = "il y a une erreur dans la saisie de la Ville";
+  }
+};
+const verificationEmail = () => {
+  if (validateEmail(inputEmail.value) == true) {
+    errorMsgEmail.innerText = "";
+    email = true;
+  } else {
+    email = false;
+    errorMsgEmail.innerText =
+      "il y a une erreur dans la saisie de l'addresse Email";
+  }
+};
+// fonction qui valide une saisie grace a regex
+function validateFirstName(name) {
+  var re = /^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$/i;
+  return re.test(name);
+}
+function validateCity(city) {
+  var re = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
+  return re.test(city);
+}
+function validateEmail(email) {
+  var re = /\S+@\S+\.\S+/;
+  return re.test(email);
+}
+
+//fonction au click sur commander
+order.addEventListener("click", function (event) {
+  // ne raffraichie pas la page
+  event.preventDefault();
+  //execution des verification au click sur le bouton commande
+  verificationFirstName();
+  verificationLastName();
+  verificationAdress();
+  verificationCity();
+  verificationEmail();
+  // si toute les variable sont true creer un objet avec les donnees saisie par l'utilisateur
+  if (prenom && nom && adresse && ville && email) {
+    let donneeUtilisateur = {
+      firstName: inputFirstName.value,
+      lastName: inputLastName.value,
+      address: inputAdresse.value,
+      city: inputCity.value,
+      email: inputEmail.value,
+    };
+    const tableauPanier = JSON.parse(localStorage.getItem("panier"));
+
+    //fonction qui place l'id dans le tableau pour la requête
+    const bodyProducts = () => {
+      let idProduct = [];
+      for (let produit of tableauPanier) {
+        idProduct.push(produit.id);
+      }
+      return idProduct;
+    };
+    //creation de l'objet qui contiendra les information de la commande
+    let body = {
+      contact: donneeUtilisateur,
+      products: bodyProducts(),
+    };
+    // requete envoie a l'API
+    const apiFetch2 = () => {
+      //lien pour requete à l'API de commande
+      fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      })
+        .then(function (response) {
+          if (response.ok) {
+            return response.json();
+          }
+        })
+
+        //recuperation des données
+        .then(function (data) {
+          localStorage.setItem("orderId", data.orderId);
+
+          document.location.href = "confirmation.html";
+        })
+
+        //en cas error afficher une alerte
+        .catch(function (err) {
+          alert("Probleme avec l'API");
+        });
+    };
+    apiFetch2();
+  }
+});

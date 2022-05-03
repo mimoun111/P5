@@ -1,6 +1,3 @@
-let apiTableau = [];
-const items = document.getElementById("items");
-
 // requete pour récupération des donnés
 const apiFetch = () => {
   //lien pour requete à l'API
@@ -13,9 +10,7 @@ const apiFetch = () => {
     })
     //recuperation des donné
     .then(function (data) {
-      apiTableau = data;
-      parcourirTableau(apiTableau);
-      console.log(apiTableau);
+      parcourirTableau(data);
     })
     //en cas error afficher une alerte
     .catch(function (err) {
@@ -23,8 +18,10 @@ const apiFetch = () => {
     });
 };
 
-// parcourir un Tableau
+// parcourir data et affichage des produit
 const parcourirTableau = (tableau) => {
+  const items = document.getElementById("items");
+  // pour chaque element du tableau
   for (let product of tableau) {
     //creation des element dans Dom
     const newA = document.createElement("a");
