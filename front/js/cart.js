@@ -239,8 +239,22 @@ function validateEmail(email) {
   return re.test(email);
 }
 
+// vérification de la présence d'article dans le panier
+let panierRempli = false;
+const presencePanier = () => {
+  if (checkPanier.length > 0) {
+    panierRempli = true;
+  } else {
+    panierRempli = false;
+    if (window.confirm(`Veuillez ajouter un produit`)) {
+      window.location.href = "index.html";
+    }
+  }
+};
+
 //fonction au click sur commander
 order.addEventListener("click", function (event) {
+  presencePanier();
   // ne raffraichie pas la page
   event.preventDefault();
   //execution des verification au click sur le bouton commande
@@ -250,7 +264,7 @@ order.addEventListener("click", function (event) {
   verificationCity();
   verificationEmail();
   // si toute les variable sont true creer un objet avec les donnees saisie par l'utilisateur
-  if (prenom && nom && adresse && ville && email) {
+  if (prenom && nom && adresse && ville && email && panierRempli) {
     let donneeUtilisateur = {
       firstName: inputFirstName.value,
       lastName: inputLastName.value,
