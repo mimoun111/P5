@@ -37,11 +37,13 @@ const calculPrixTotal = () => {
   if (checkPanier) {
     // pour chaque produit du panier
     for (produit of checkPanier) {
-      // ajoute la quantité de produit au total de produit
-      totalProduit += produit.quantity;
-      // multiplie le prix du produit  par la quantité
-      prixTotal +=
-        recuperationValeurProduit(produit.id).price * produit.quantity;
+      if (produit.quantity <= 100) {
+        // ajoute la quantité de produit au total de produit
+        totalProduit += produit.quantity;
+        // multiplie le prix du produit  par la quantité
+        prixTotal +=
+          recuperationValeurProduit(produit.id).price * produit.quantity;
+      }
     }
     // achicher le resultat
     totalQuantity.innerText = totalProduit;
@@ -131,10 +133,16 @@ const afficherProduit = () => {
       input.addEventListener("change", (event) => {
         let targetValue = event.target.value;
 
-        if (targetValue > 0) {
+        if (targetValue > 0 && targetValue <= 100) {
           produit.quantity = parseInt(targetValue);
           calculPrixTotal();
           localStorage.setItem("panier", JSON.stringify(checkPanier));
+        } else if (targetValue > 100) {
+          input.value = 100;
+          produit.quantity = 100;
+          localStorage.setItem("panier", JSON.stringify(checkPanier));
+          calculPrixTotal();
+          alert("veuillez a choisir une quantité inferieur a 100 ");
         } else {
           checkPanier.splice(index, 1);
           localStorage.setItem("panier", JSON.stringify(checkPanier));

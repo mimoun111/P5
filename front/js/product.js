@@ -74,7 +74,7 @@ button.addEventListener("click", function () {
   let productInCart = false;
   // si la quantité saisie est egal a 0 ou que la couleur selectionner n'est pas selectionner
   if (
-    selectQuantity.value >= 100 ||
+    selectQuantity.value > 100 ||
     selectQuantity.value == 0 ||
     selectColor.value == ""
   ) {
