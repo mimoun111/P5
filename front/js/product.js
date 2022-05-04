@@ -73,7 +73,11 @@ button.addEventListener("click", function () {
   // configuration de la variable qui sera changer si une condition est rempli
   let productInCart = false;
   // si la quantité saisie est egal a 0 ou que la couleur selectionner n'est pas selectionner
-  if (selectQuantity.value == 0 || selectColor.value == "") {
+  if (
+    selectQuantity.value >= 100 ||
+    selectQuantity.value == 0 ||
+    selectColor.value == ""
+  ) {
     alert("veuillez selectionner une couleur et une quantité");
     // si le panier n'est pas existant creer un tableau dans lequel tu ajoutera le produit
   } else if (!panier) {
