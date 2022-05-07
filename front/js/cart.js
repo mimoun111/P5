@@ -37,7 +37,7 @@ const calculPrixTotal = () => {
   if (checkPanier) {
     // pour chaque produit du panier
     for (produit of checkPanier) {
-      if (produit.quantity <= 100) {
+      if (produit.quantity <= 99) {
         // ajoute la quantité de produit au total de produit
         totalProduit += produit.quantity;
         // multiplie le prix du produit  par la quantité
@@ -127,22 +127,26 @@ const afficherProduit = () => {
       input.classList.add("itemQuantity");
       input.setAttribute("name", "itemQuantity");
       input.setAttribute("min", "1");
-      input.setAttribute("max", "100");
+      input.setAttribute("max", "99");
       input.setAttribute("value", produit.quantity);
       // création de la réaction au changement de la valeur
       input.addEventListener("change", (event) => {
         let targetValue = event.target.value;
-
-        if (targetValue > 0 && targetValue <= 100) {
+        // si la valeur est entre 0 et 100
+        if (targetValue > 0 && targetValue < 100) {
+          // recalcul le prixtotal et met a jour le local storage
           produit.quantity = parseInt(targetValue);
           calculPrixTotal();
           localStorage.setItem("panier", JSON.stringify(checkPanier));
-        } else if (targetValue > 100) {
-          input.value = 100;
-          produit.quantity = 100;
+          // sinon si la quantité est supérieurou egale a 100
+        } else if (targetValue >= 100) {
+          // change la valeur sur 99 et alert l'utilisateur
+          input.value = 99;
+          produit.quantity = 99;
           localStorage.setItem("panier", JSON.stringify(checkPanier));
           calculPrixTotal();
           alert("veuillez a choisir une quantité inferieur a 100 ");
+          // sinon suprime le produit
         } else {
           checkPanier.splice(index, 1);
           localStorage.setItem("panier", JSON.stringify(checkPanier));
@@ -182,8 +186,10 @@ const afficherProduit = () => {
     }
   }
 };
+
 // exectution des fonction
 apiFetch();
+
 // creation des fonction permettant de verifier les valeur saisie par l'utilisateur
 const verificationFirstName = () => {
   // si la valeur saisie par l'utilisateur est valable par rapport a la fonction validateFirstName converti la variable en true
@@ -196,6 +202,7 @@ const verificationFirstName = () => {
     errorMsgFirstName.innerText = "il y a une erreur dans la saisie du prénom";
   }
 };
+
 const verificationLastName = () => {
   if (validateFirstName(inputLastName.value) == true) {
     errorMsgLastName.innerText = "";
@@ -205,6 +212,7 @@ const verificationLastName = () => {
     errorMsgLastName.innerText = "il y a une erreur dans la saisie du nom";
   }
 };
+
 const verificationAdress = () => {
   if (adresse == true) {
     errorMsgAdresse.innerText = "";
@@ -214,6 +222,7 @@ const verificationAdress = () => {
     errorMsgAdresse.innerText = "il y a une erreur dans la saisie l'adress";
   }
 };
+
 const verificationCity = () => {
   if (validateCity(inputCity.value) == true) {
     errorMsgCity.innerText = "";
