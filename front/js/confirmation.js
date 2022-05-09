@@ -1,8 +1,8 @@
 // fonction qui affiche la commande
 const main = () => {
-  const idNode = document.getElementById("orderId");
+  const order = document.getElementById("orderId");
   //   affiche l'id
-  idNode.innerText = localStorage.getItem("orderId");
+  order.innerText = localStorage.getItem("orderId");
   //   vide le localstorage
   localStorage.clear();
 };

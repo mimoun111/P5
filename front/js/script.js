@@ -1,35 +1,35 @@
 // requete pour récupération des donnés
 const apiFetch = () => {
-  //lien pour requete à l'API
+  //va chercher la reponse que te donne cette url
   fetch("http://localhost:3000/api/products/")
-    //convertisseur de json en javascript
+    //ensuite si les données  sont ok retourne les données en format javascript
     .then(function (response) {
       if (response.ok) {
         return response.json();
       }
     })
-    //recuperation des donné
+    //ensuite avec les donnée de la reponse
     .then(function (data) {
       parcourirTableau(data);
     })
     //en cas error afficher une alerte
     .catch(function (err) {
-      alert("Une erreur est survenue");
+      alert("Une erreur est survenue avec l'Api");
     });
 };
 
 // parcourir data et affichage des produit
 const parcourirTableau = (tableau) => {
   const items = document.getElementById("items");
-  // pour chaque element du tableau
+  // pour chaque produit du tableau récupéré de l'api
   for (let product of tableau) {
-    //creation des element dans Dom
+    //creation des element dans le Dom
     const newA = document.createElement("a");
     const newArticle = document.createElement("article");
     const newImg = document.createElement("img");
     const newH3 = document.createElement("h3");
     const newP = document.createElement("p");
-    //ajout des attributs
+    //ajout des attributs aux élement
     newA.setAttribute("href", `./product.html?id=${product._id} `);
     newImg.setAttribute("src", product.imageUrl);
     newImg.setAttribute("alt", product.altTxt);

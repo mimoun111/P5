@@ -1,20 +1,24 @@
+// récupération des id dans le DOM
 const section = document.getElementById("cart__items");
 const totalQuantity = document.getElementById("totalQuantity");
 const totalPrice = document.getElementById("totalPrice");
+const order = document.getElementById("order");
 
+// récupération des error msg
 const errorMsgFirstName = document.getElementById("firstNameErrorMsg");
 const errorMsgLastName = document.getElementById("lastNameErrorMsg");
 const errorMsgAdresse = document.getElementById("addressErrorMsg");
 const errorMsgCity = document.getElementById("cityErrorMsg");
 const errorMsgEmail = document.getElementById("emailErrorMsg");
-const order = document.getElementById("order");
 
+// récuupération des champs de saisie
 let inputFirstName = document.getElementById("firstName");
 let inputLastName = document.getElementById("lastName");
 let inputAdresse = document.getElementById("address");
 let inputCity = document.getElementById("city");
 let inputEmail = document.getElementById("email");
 
+// variable boolean pour la validaton des champs saisie par l'utilisateur
 let prenom = false;
 let nom = false;
 let adresse = true;
@@ -22,7 +26,7 @@ let ville = false;
 let email = false;
 
 //stockage des  données dans localstorage nommé panier
-let checkPanier = JSON.parse(localStorage.getItem("panier"));
+let localStoragePanier = JSON.parse(localStorage.getItem("panier"));
 let apiTableau = [];
 
 // recuperation dynamique des valeur du produit de l'api
@@ -34,9 +38,9 @@ const calculPrixTotal = () => {
   let prixTotal = 0;
   let totalProduit = 0;
   // si panier existe
-  if (checkPanier) {
+  if (localStoragePanier) {
     // pour chaque produit du panier
-    for (produit of checkPanier) {
+    for (produit of localStoragePanier) {
       if (produit.quantity <= 99) {
         // ajoute la quantité de produit au total de produit
         totalProduit += produit.quantity;
@@ -50,7 +54,7 @@ const calculPrixTotal = () => {
     totalPrice.innerText = prixTotal;
   }
 };
-
+// requete api
 const apiFetch = () => {
   //lien pour requete à l'API
   fetch("http://localhost:3000/api/products/")
@@ -78,10 +82,10 @@ const afficherProduit = () => {
   while (section.firstChild) {
     section.removeChild(section.firstChild);
   }
-  //si panier existant dans localstorage
-  if (checkPanier) {
+  //si le  panier est existant dans localstorage
+  if (localStoragePanier) {
     //recuperation de l'index et de la valeur du tableau
-    for (let [index, produit] of checkPanier.entries()) {
+    for (let [index, produit] of localStoragePanier.entries()) {
       //recupération des element du DOM
       const newArticle = document.createElement("article");
       const divImg = document.createElement("div");
@@ -129,6 +133,7 @@ const afficherProduit = () => {
       input.setAttribute("min", "1");
       input.setAttribute("max", "99");
       input.setAttribute("value", produit.quantity);
+
       // création de la réaction au changement de la valeur
       input.addEventListener("change", (event) => {
         let targetValue = event.target.value;
@@ -137,19 +142,19 @@ const afficherProduit = () => {
           // recalcul le prixtotal et met a jour le local storage
           produit.quantity = parseInt(targetValue);
           calculPrixTotal();
-          localStorage.setItem("panier", JSON.stringify(checkPanier));
+          localStorage.setItem("panier", JSON.stringify(localStoragePanier));
           // sinon si la quantité est supérieurou egale a 100
         } else if (targetValue >= 100) {
           // change la valeur sur 99 et alert l'utilisateur
           input.value = 99;
           produit.quantity = 99;
-          localStorage.setItem("panier", JSON.stringify(checkPanier));
+          localStorage.setItem("panier", JSON.stringify(localStoragePanier));
           calculPrixTotal();
           alert("veuillez a choisir une quantité inferieur a 100 ");
           // sinon suprime le produit
         } else {
-          checkPanier.splice(index, 1);
-          localStorage.setItem("panier", JSON.stringify(checkPanier));
+          localStoragePanier.splice(index, 1);
+          localStorage.setItem("panier", JSON.stringify(localStoragePanier));
           afficherProduit();
         }
       });
@@ -162,8 +167,8 @@ const afficherProduit = () => {
       newParaDelete.innerText = "supprimer";
       //ajout d'une fontion qui supprime l'elemment du panier et du localstorage
       newParaDelete.addEventListener("click", () => {
-        checkPanier.splice(index, 1);
-        localStorage.setItem("panier", JSON.stringify(checkPanier));
+        localStoragePanier.splice(index, 1);
+        localStorage.setItem("panier", JSON.stringify(localStoragePanier));
         afficherProduit();
         calculPrixTotal();
       });
@@ -259,7 +264,7 @@ function validateEmail(email) {
 // vérification de la présence d'article dans le panier
 let panierRempli = false;
 const presencePanier = () => {
-  if (checkPanier.length > 0) {
+  if (localStoragePanier.length > 0) {
     panierRempli = true;
   } else {
     panierRempli = false;
@@ -293,12 +298,17 @@ order.addEventListener("click", function (event) {
 
     //fonction qui place l'id dans le tableau pour la requête
     const bodyProducts = () => {
+      // creation d'un tableau qui stockera l'id du produit
       let idProduct = [];
+      // pour chaque produit du panier
       for (let produit of tableauPanier) {
+        // ajoute au tableau l'id
         idProduct.push(produit.id);
       }
+      // bodyProducts = a tout les id des produit
       return idProduct;
     };
+
     //creation de l'objet qui contiendra les information de la commande
     let body = {
       contact: donneeUtilisateur,
@@ -313,6 +323,7 @@ order.addEventListener("click", function (event) {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
+        // converti le l'objet javascript en objet JSON
         body: JSON.stringify(body),
       })
         .then(function (response) {

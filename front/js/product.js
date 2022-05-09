@@ -21,38 +21,44 @@ const apiFetch = () => {
     // ensuite avec les donnée de la reponse
     .then(function (data) {
       dataProduct = data;
-      // recupere les id  du html
-      const itemImg = document.getElementsByClassName("item__img");
-      const title = document.getElementById("title");
-      const paragDescription = document.getElementById("description");
-      const price = document.getElementById("price");
-      // ajout de l'image et Alt
-      const newItemImg = document.createElement("img");
-      newItemImg.setAttribute("src", data.imageUrl);
-      newItemImg.setAttribute("alt", data.altTxt);
-      itemImg[0].appendChild(newItemImg);
-
-      // ajout du prix;
-      price.innerHTML = data.price;
-      //ajout titre
-      title.innerHTML = data.name;
-
-      //ajout description
-      paragDescription.innerHTML = data.description;
-
-      //couleur
-      for (color of data.colors) {
-        const itemColor = document.createElement("option");
-        itemColor.innerHTML = color;
-        itemColor.setAttribute("value", color);
-        selectColor.appendChild(itemColor);
-      }
+      affichageDesProduits(data);
     })
-    //en cas error afficher une alerte
+
     .catch(function (err) {
-      alert("Une erreur est survenue");
+      alert("Une erreur est survenue avec l'api");
     });
 };
+
+const affichageDesProduits = (data) => {
+  // recupere les id  du html
+  const itemImg = document.getElementsByClassName("item__img");
+  const title = document.getElementById("title");
+  const paragDescription = document.getElementById("description");
+  const price = document.getElementById("price");
+  // ajout de l'image et Alt
+  const newItemImg = document.createElement("img");
+  newItemImg.setAttribute("src", data.imageUrl);
+  newItemImg.setAttribute("alt", data.altTxt);
+  itemImg[0].appendChild(newItemImg);
+
+  // ajout du prix;
+  price.innerHTML = data.price;
+  //ajout titre
+  title.innerHTML = data.name;
+
+  //ajout description
+  paragDescription.innerHTML = data.description;
+
+  //couleur
+  for (color of data.colors) {
+    const itemColor = document.createElement("option");
+    itemColor.innerHTML = color;
+    itemColor.setAttribute("value", color);
+    selectColor.appendChild(itemColor);
+    //en cas error afficher une alerte
+  }
+};
+
 // creation d'une popup de confirmation
 const popupConfirmation = () => {
   if (
@@ -67,12 +73,11 @@ Pour consulter votre panier, cliquez sur OK`)
 const button = document.getElementById("addToCart");
 // ajout d'un evenement au click sur le bouton
 button.addEventListener("click", function () {
-  // recuperation de produit quantité
   // configuration du localStorage
   let panier = JSON.parse(localStorage.getItem("panier"));
   // configuration de la variable qui sera changer si une condition est rempli
   let productInCart = false;
-  // si la quantité saisie est egal a 0 ou que la couleur selectionner n'est pas selectionner
+  // si la quantité saisie est egal a 0 ou que la quantité saisie est supérieur ou égal a 100 ou que la couleur selectionner n'est pas selectionner
   if (
     selectQuantity.value >= 100 ||
     selectQuantity.value == 0 ||
