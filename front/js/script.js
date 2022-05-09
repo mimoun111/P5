@@ -1,4 +1,4 @@
-// requete pour récupération des donnés
+// requete pour récupération des donnés grace a fetch
 const apiFetch = () => {
   //va chercher la reponse que te donne cette url
   fetch("http://localhost:3000/api/products/")

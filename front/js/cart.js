@@ -159,10 +159,10 @@ const afficherProduit = () => {
         }
       });
 
+      //affichage du bouton supprimer
       divContentSettingsDelete.classList.add(
         "cart__item__content__settings__delete"
       );
-      //affichage du bouton supprimer
       newParaDelete.classList.add("deleteItem");
       newParaDelete.innerText = "supprimer";
       //ajout d'une fontion qui supprime l'elemment du panier et du localstorage
@@ -269,6 +269,7 @@ const presencePanier = () => {
   } else {
     panierRempli = false;
     if (window.confirm(`Veuillez ajouter un produit`)) {
+      // redirection vers la page d'accueil
       window.location.href = "index.html";
     }
   }
@@ -334,9 +335,8 @@ order.addEventListener("click", function (event) {
 
         //recuperation des données
         .then(function (data) {
-          localStorage.setItem("orderId", data.orderId);
-
-          document.location.href = "confirmation.html";
+          // redirection vers la page confiramtion
+          document.location.href = "confirmation.html?orderId=" + data.orderId;
         })
 
         //en cas error afficher une alerte

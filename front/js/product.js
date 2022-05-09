@@ -3,9 +3,11 @@ const selectQuantity = document.getElementById("quantity");
 // dataProduct egal au données recuperer par l'url de fetch
 let dataProduct = {};
 
-// récupération de l'id du produit
+// recupere l'url en chaine de caractere
 let str = window.location.href;
+// converti en objet
 let url = new URL(str);
+// recupere l'id du produit de l'url
 let idProduct = url.searchParams.get("id");
 
 // récupération des donnés
@@ -21,7 +23,7 @@ const apiFetch = () => {
     // ensuite avec les donnée de la reponse
     .then(function (data) {
       dataProduct = data;
-      affichageDesProduits(data);
+      affichageDuProduit(data);
     })
 
     .catch(function (err) {
@@ -29,7 +31,7 @@ const apiFetch = () => {
     });
 };
 
-const affichageDesProduits = (data) => {
+const affichageDuProduit = (data) => {
   // recupere les id  du html
   const itemImg = document.getElementsByClassName("item__img");
   const title = document.getElementById("title");
@@ -55,7 +57,6 @@ const affichageDesProduits = (data) => {
     itemColor.innerHTML = color;
     itemColor.setAttribute("value", color);
     selectColor.appendChild(itemColor);
-    //en cas error afficher une alerte
   }
 };
 
@@ -65,6 +66,7 @@ const popupConfirmation = () => {
     window.confirm(`Votre commande de ${selectQuantity.value} ${dataProduct.name} ${selectColor.value} est ajoutée au panier
 Pour consulter votre panier, cliquez sur OK`)
   ) {
+    // redirection ver la page panier
     window.location.href = "cart.html";
   }
 };
@@ -77,6 +79,7 @@ button.addEventListener("click", function () {
   let panier = JSON.parse(localStorage.getItem("panier"));
   // configuration de la variable qui sera changer si une condition est rempli
   let productInCart = false;
+
   // si la quantité saisie est egal a 0 ou que la quantité saisie est supérieur ou égal a 100 ou que la couleur selectionner n'est pas selectionner
   if (
     selectQuantity.value >= 100 ||
@@ -84,6 +87,7 @@ button.addEventListener("click", function () {
     selectColor.value == ""
   ) {
     alert("veuillez selectionner une couleur et une quantité entre 0 et 100");
+
     // si le panier n'est pas existant creer un tableau dans lequel tu ajoutera le produit
   } else if (!panier) {
     const produitTableau = [];
@@ -95,6 +99,7 @@ button.addEventListener("click", function () {
     produitTableau.push(produit);
     localStorage.setItem("panier", JSON.stringify(produitTableau));
     popupConfirmation();
+
     // si le panier existe
   } else {
     // pour chaque produit de mon panier
